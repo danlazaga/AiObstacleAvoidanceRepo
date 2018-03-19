@@ -14,13 +14,13 @@ public class VehicleAvoidance : MonoBehaviour
     public float curSpeed;
     private Vector3 targetPoint;
     private float initialSpeed;
-    Vector3 dir;
+    Vector3 desiredDestination;
 
     // Use this for initialization
     void Start()
     {
         mass = 5.0f;
-        targetPoint = Vector3.zero;
+        targetPoint = this.transform.position;
         initialSpeed = speed;
     }
 
@@ -44,8 +44,7 @@ public class VehicleAvoidance : MonoBehaviour
         }
 
         //1- Compute the directional vector to the target position
-        //ComputeDistance();
-        dir = (targetPoint - transform.position).normalized;
+        desiredDestination = (targetPoint - transform.position).normalized;
 
         // //2- When the target point is 1 meter away, exit the update function, so that the vehicle stops 
         if (ComputeDistance() < 1)
@@ -77,46 +76,35 @@ public class VehicleAvoidance : MonoBehaviour
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, transform.forward, out hit, minimumDistToAvoid))
-        {
-            if (hit.transform != transform)
-            {
-                Debug.DrawLine(transform.position, hit.point, Color.blue);
-                dir += hit.normal * force;
-            }
-        }
-
-        Vector3 leftR = transform.position;
-        Vector3 rightR = transform.position;
-
-        leftR.x -= 2;
-        rightR.x += 2;
+        float shoulderMultiplier = 1f;
+        Vector3 leftR = transform.position - (transform.right * shoulderMultiplier);
+        Vector3 rightR = transform.position + (transform.right * shoulderMultiplier);
 
         if (Physics.Raycast(leftR, transform.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != transform)
             {
                 Debug.DrawLine(leftR, hit.point, Color.blue);
-                dir += hit.normal * force;
+                desiredDestination += hit.normal * force;
             }
         }
 
-        if (Physics.Raycast(rightR, transform.forward, out hit, minimumDistToAvoid))
+        else if (Physics.Raycast(rightR, transform.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != transform)
             {
-                Debug.DrawLine(rightR, hit.point, Color.blue);
-                dir += hit.normal * force;
+                Debug.DrawLine(rightR, hit.point, Color.green);
+                desiredDestination += hit.normal * force;
             }
         }
 
-        return dir;
+        return desiredDestination;
     }
 
     void LookAtTarget(Vector3 target)
     {
         Quaternion rot = Quaternion.LookRotation(target);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, 2f * Time.deltaTime);
     }
 
     void SetDestination()
