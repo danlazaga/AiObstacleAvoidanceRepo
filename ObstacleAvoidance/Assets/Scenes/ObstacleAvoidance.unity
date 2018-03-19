@@ -229,7 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 100
   mass: 5
-  force: 40
+  force: 50
   minimumDistToAvoid: 20
   curSpeed: 5
 --- !u!23 &35276054

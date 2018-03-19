@@ -82,7 +82,7 @@ public class VehicleAvoidance : MonoBehaviour
             if (hit.transform != transform)
             {
                 Debug.DrawLine(transform.position, hit.point, Color.blue);
-                dir += hit.normal * force;
+                dir += hit.normal * 50;
             }
         }
 
@@ -97,7 +97,7 @@ public class VehicleAvoidance : MonoBehaviour
             if (hit.transform != transform)
             {
                 Debug.DrawLine(leftR, hit.point, Color.blue);
-                dir += hit.normal * force;
+                dir += hit.normal * 50;
             }
         }
 
@@ -106,7 +106,7 @@ public class VehicleAvoidance : MonoBehaviour
             if (hit.transform != transform)
             {
                 Debug.DrawLine(rightR, hit.point, Color.blue);
-                dir += hit.normal * force;
+                dir += hit.normal * 50;
             }
         }
 
@@ -116,7 +116,7 @@ public class VehicleAvoidance : MonoBehaviour
     void LookAtTarget(Vector3 target)
     {
         Quaternion rot = Quaternion.LookRotation(target);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 5.0f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime);
     }
 
     void SetDestination()
