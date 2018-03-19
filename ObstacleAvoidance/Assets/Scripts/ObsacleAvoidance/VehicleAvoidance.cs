@@ -8,20 +8,19 @@ public class VehicleAvoidance : MonoBehaviour
     public float mass = 5.0f;
     public float force = 40.0f;
     public float minimumDistToAvoid = 20.0f;
-    public float heightMultiplier;
 
     float velocity;
     //Actual speed of the vehicle 
     public float curSpeed;
     private Vector3 targetPoint;
     private float initialSpeed;
-    float distance;
+    Vector3 dir;
 
     // Use this for initialization
     void Start()
     {
         mass = 5.0f;
-        targetPoint = Vector3.zero;
+        targetPoint = this.transform.position;
         initialSpeed = speed;
     }
 
@@ -45,28 +44,30 @@ public class VehicleAvoidance : MonoBehaviour
         }
 
         //1- Compute the directional vector to the target position
-        ComputeDistance();
+        //ComputeDistance();
+        dir = (targetPoint - transform.position).normalized;
 
         // //2- When the target point is 1 meter away, exit the update function, so that the vehicle stops 
-        if (ComputeDistance() > 20)
+        if (ComputeDistance() < 1)
             return;
 
-        // //3- Adjust the speed to delta time
+        //3- Adjust the speed to delta time
         speed = Time.deltaTime;
 
-        // //4- Apply obstacle avoidance
+        //4- Apply obstacle avoidance
         AvoidObstacles();
 
-        // //5- Rotate the vehicle to its target directional vector
-        LookAtTarget(targetPoint);
+        //5- Rotate the vehicle to its target directional vector
+        LookAtTarget(AvoidObstacles());
 
         //6- Move the vehicle towards the target point
-        SetDestination(targetPoint, speed);
+        SetDestination();
     }
 
+    #region Callbacks
     float ComputeDistance()
     {
-        distance = Vector3.Distance(transform.position, targetPoint);
+        var distance = Vector3.Distance(transform.position, targetPoint);
 
         return distance;
     }
@@ -76,47 +77,52 @@ public class VehicleAvoidance : MonoBehaviour
     {
         RaycastHit hit;
 
-        Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, transform.forward * minimumDistToAvoid, Color.green);
-        Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, (transform.forward + transform.right).normalized * minimumDistToAvoid, Color.green);
-        Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, (transform.forward - transform.right).normalized * minimumDistToAvoid, Color.green);
-
-        if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, transform.forward, out hit, minimumDistToAvoid))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != transform)
             {
-                targetPoint += hit.normal * force;
+                Debug.DrawLine(transform.position, hit.point, Color.blue);
+                dir += hit.normal * force;
             }
         }
 
-        if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward + transform.right), out hit, minimumDistToAvoid))
+        Vector3 leftR = transform.position;
+        Vector3 rightR = transform.position;
+
+        leftR.x -= 2;
+        rightR.x += 2;
+
+        if (Physics.Raycast(leftR, transform.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != transform)
             {
-                targetPoint += hit.normal * force;
+                Debug.DrawLine(leftR, hit.point, Color.blue);
+                dir += hit.normal * force;
             }
         }
 
-        if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward - transform.right), out hit, minimumDistToAvoid))
+        if (Physics.Raycast(rightR, transform.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != transform)
             {
-                targetPoint += hit.normal * force;
+                Debug.DrawLine(rightR, hit.point, Color.blue);
+                dir += hit.normal * force;
             }
         }
 
-        return hit.normal;
+        return dir;
     }
 
     void LookAtTarget(Vector3 target)
     {
-         var rot = Quaternion.LookRotation(target - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 10f);
+        Quaternion rot = Quaternion.LookRotation(target);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 5.0f);
     }
 
-    void SetDestination(Vector3 target, float deltaTime)
+    void SetDestination()
     {
-        Vector3 direction = target - transform.position;
-        direction.Normalize();
-        transform.position += direction * curSpeed * deltaTime;
+        Debug.DrawLine(targetPoint, transform.position, Color.red);
+        transform.position += transform.forward * curSpeed * Time.deltaTime;
     }
+    #endregion
 }

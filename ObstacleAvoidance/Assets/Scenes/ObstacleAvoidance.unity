@@ -229,10 +229,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 100
   mass: 5
-  force: 20
-  minimumDistToAvoid: 5
-  heightMultiplier: 1
-  curSpeed: 10
+  force: 40
+  minimumDistToAvoid: 20
+  curSpeed: 5
 --- !u!23 &35276054
 MeshRenderer:
   m_ObjectHideFlags: 0
