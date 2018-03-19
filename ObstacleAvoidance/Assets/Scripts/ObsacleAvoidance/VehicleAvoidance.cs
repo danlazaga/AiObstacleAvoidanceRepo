@@ -20,7 +20,7 @@ public class VehicleAvoidance : MonoBehaviour
     void Start()
     {
         mass = 5.0f;
-        targetPoint = this.transform.position;
+        targetPoint = Vector3.zero;
         initialSpeed = speed;
     }
 
@@ -82,7 +82,7 @@ public class VehicleAvoidance : MonoBehaviour
             if (hit.transform != transform)
             {
                 Debug.DrawLine(transform.position, hit.point, Color.blue);
-                dir += hit.normal * 50;
+                dir += hit.normal * force;
             }
         }
 
@@ -97,7 +97,7 @@ public class VehicleAvoidance : MonoBehaviour
             if (hit.transform != transform)
             {
                 Debug.DrawLine(leftR, hit.point, Color.blue);
-                dir += hit.normal * 50;
+                dir += hit.normal * force;
             }
         }
 
@@ -106,7 +106,7 @@ public class VehicleAvoidance : MonoBehaviour
             if (hit.transform != transform)
             {
                 Debug.DrawLine(rightR, hit.point, Color.blue);
-                dir += hit.normal * 50;
+                dir += hit.normal * force;
             }
         }
 
@@ -122,6 +122,7 @@ public class VehicleAvoidance : MonoBehaviour
     void SetDestination()
     {
         Debug.DrawLine(targetPoint, transform.position, Color.red);
+        
         transform.position += transform.forward * curSpeed * Time.deltaTime;
     }
     #endregion
