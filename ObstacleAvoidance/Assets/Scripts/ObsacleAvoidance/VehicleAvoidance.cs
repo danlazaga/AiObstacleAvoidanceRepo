@@ -4,6 +4,7 @@ using System;
 
 public class VehicleAvoidance : MonoBehaviour
 {
+    #region Variables
     public float speed = 10.0f;
     public float mass = 5.0f;
     public float force = 40.0f;
@@ -15,7 +16,9 @@ public class VehicleAvoidance : MonoBehaviour
     private Vector3 targetPoint;
     private float initialSpeed;
     Vector3 desiredDestination;
+    #endregion
 
+    #region Unity Methods
     // Use this for initialization
     void Start()
     {
@@ -62,6 +65,7 @@ public class VehicleAvoidance : MonoBehaviour
         //6- Move the vehicle towards the target point
         SetDestination();
     }
+    #endregion
 
     #region Callbacks
     float ComputeDistance()
