@@ -48,7 +48,7 @@ public class VehicleAvoidance : MonoBehaviour
         }
 
         //1- Compute the directional vector to the target position
-        desiredDestination = (targetPoint - transform.position).normalized;
+        desiredDestination = (targetPoint - transform.localPosition).normalized;
 
         // //2- When the target point is 1 meter away, exit the update function, so that the vehicle stops 
         if (ComputeDistance () < 1)
@@ -71,7 +71,7 @@ public class VehicleAvoidance : MonoBehaviour
 #region Callbacks
     float ComputeDistance ()
     {
-        var distance = Vector3.Distance (transform.position, targetPoint);
+        var distance =  (transform.position - targetPoint).sqrMagnitude;
     
         return distance;
     }
