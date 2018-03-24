@@ -48,15 +48,15 @@ public class VehicleAvoidance : MonoBehaviour
         }
 
         //1- Compute the directional vector to the target position
-        desiredDestination = (targetPoint - transform.localPosition).normalized;
+        desiredDestination = targetPoint - transform.localPosition;
 
         // //2- When the target point is 1 meter away, exit the update function, so that the vehicle stops 
-        if (ComputeDistance () < 1)
+        if (desiredDestination.sqrMagnitude < 1)
             return;
 
         //3- Adjust the speed to delta time
-        speed = Time.deltaTime;
-
+        velocity = speed * Time.deltaTime;
+    
         //4- Apply obstacle avoidance
         AvoidObstacles ();
 
@@ -69,12 +69,6 @@ public class VehicleAvoidance : MonoBehaviour
 #endregion
 
 #region Callbacks
-    float ComputeDistance ()
-    {
-        var distance =  (transform.position - targetPoint).sqrMagnitude;
-    
-        return distance;
-    }
 
     //Calculate the new directional vector to avoid the obstacle
     public Vector3 AvoidObstacles ()
@@ -109,14 +103,14 @@ public class VehicleAvoidance : MonoBehaviour
     void LookAtTarget (Vector3 target)
     {
         Quaternion rot = Quaternion.LookRotation (target);
-        transform.rotation = Quaternion.Slerp (transform.rotation, rot, 2f * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp (transform.rotation, rot, Time.deltaTime * 5f);
     }
 
     void SetDestination ()
     {
         Debug.DrawLine (targetPoint, transform.position, Color.red);
 
-        transform.position += transform.forward * curSpeed * Time.deltaTime;
+        transform.position += transform.forward * velocity;
     }
 #endregion
 }
