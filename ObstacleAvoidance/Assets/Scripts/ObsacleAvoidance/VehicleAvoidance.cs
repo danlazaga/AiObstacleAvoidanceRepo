@@ -24,7 +24,7 @@ public class VehicleAvoidance : MonoBehaviour
     void Start ()
     {
         mass = 5.0f;
-        targetPoint = this.transform.position;
+        targetPoint = this.transform.localPosition;
         initialSpeed = speed;
     }
 
@@ -76,8 +76,8 @@ public class VehicleAvoidance : MonoBehaviour
         RaycastHit hit;
 
         float shoulderMultiplier = 1f;
-        Vector3 leftR = transform.position - (transform.right * shoulderMultiplier);
-        Vector3 rightR = transform.position + (transform.right * shoulderMultiplier);
+        Vector3 leftR = transform.localPosition - (transform.right * shoulderMultiplier);
+        Vector3 rightR = transform.localPosition + (transform.right * shoulderMultiplier);
 
         if (Physics.Raycast (leftR, transform.forward, out hit, minimumDistToAvoid))
         {
@@ -110,7 +110,7 @@ public class VehicleAvoidance : MonoBehaviour
     {
         Debug.DrawLine (targetPoint, transform.position, Color.red);
 
-        transform.position += transform.forward * velocity;
+        transform.localPosition += transform.forward * velocity;
     }
 #endregion
 }
