@@ -21,27 +21,27 @@ public class VehicleAvoidance : MonoBehaviour
 
 #region Unity Methods
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         mass = 5.0f;
         targetPoint = this.transform.localPosition;
         initialSpeed = speed;
     }
 
-    void OnGUI ()
+    void OnGUI()
     {
-        GUILayout.Label ("Click anywhere to move the vehicle to the clicked point");
+        GUILayout.Label("Click anywhere to move the vehicle to the clicked point");
     }
 
     // Update is called once per frame
-    void Update ()
+    void Update()
     {
         //Vehicle move by mouse click
         RaycastHit hit;
         //Retrieve the mouse click position by shooting a ray from the camera
-        var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Input.GetMouseButtonDown (0) && Physics.Raycast (ray, out hit, 100.0f))
+        if (Input.GetMouseButtonDown(0)&& Physics.Raycast(ray, out hit, 100.0f))
         {
             //Take the point where the ray hits the ground plane as the target rotation
             targetPoint = hit.point;
@@ -56,22 +56,22 @@ public class VehicleAvoidance : MonoBehaviour
 
         //3- Adjust the speed to delta time
         velocity = speed * Time.deltaTime;
-    
+
         //4- Apply obstacle avoidance
-        AvoidObstacles ();
+        var newVector = AvoidObstacles();
 
         //5- Rotate the vehicle to its target directional vector
-        LookAtTarget (AvoidObstacles ());
+        LookAtTarget(newVector);
 
         //6- Move the vehicle towards the target point
-        SetDestination ();
+        SetDestination();
     }
 #endregion
 
 #region Callbacks
 
     //Calculate the new directional vector to avoid the obstacle
-    public Vector3 AvoidObstacles ()
+    public Vector3 AvoidObstacles()
     {
         RaycastHit hit;
 
@@ -79,20 +79,20 @@ public class VehicleAvoidance : MonoBehaviour
         Vector3 leftR = transform.localPosition - (transform.right * shoulderMultiplier);
         Vector3 rightR = transform.localPosition + (transform.right * shoulderMultiplier);
 
-        if (Physics.Raycast (leftR, transform.forward, out hit, minimumDistToAvoid))
+        if (Physics.Raycast(leftR, transform.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != transform)
             {
-                Debug.DrawLine (leftR, hit.point, Color.blue);
+                Debug.DrawLine(leftR, hit.point, Color.blue);
                 desiredDestination += hit.normal * force;
             }
         }
 
-        else if (Physics.Raycast (rightR, transform.forward, out hit, minimumDistToAvoid))
+        else if (Physics.Raycast(rightR, transform.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != transform)
             {
-                Debug.DrawLine (rightR, hit.point, Color.green);
+                Debug.DrawLine(rightR, hit.point, Color.green);
                 desiredDestination += hit.normal * force;
             }
         }
@@ -100,15 +100,15 @@ public class VehicleAvoidance : MonoBehaviour
         return desiredDestination;
     }
 
-    void LookAtTarget (Vector3 target)
+    void LookAtTarget(Vector3 target)
     {
-        Quaternion rot = Quaternion.LookRotation (target);
-        transform.rotation = Quaternion.Slerp (transform.rotation, rot, Time.deltaTime * 5f);
+        Quaternion rot = Quaternion.LookRotation(target);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 5f);
     }
 
-    void SetDestination ()
+    void SetDestination()
     {
-        Debug.DrawLine (targetPoint, transform.position, Color.red);
+        Debug.DrawLine(targetPoint, transform.position, Color.red);
 
         transform.localPosition += transform.forward * velocity;
     }
